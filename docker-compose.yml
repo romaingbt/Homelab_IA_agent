@@ -1,0 +1,52 @@
+services:
+  # --- OLLAMA (IA avec accélération GPU AMD ROCm) ---
+  ollama:
+    image: ollama/ollama:rocm
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    devices:
+      - "/dev/kfd:/dev/kfd"
+      - "/dev/dri:/dev/dri"
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=8.0.3  # Compatibilité ROCm pour AMD RX 470/480/570/580 (Ellesmere)
+    volumes:
+      - ollama_data:/root/.ollama
+
+  # --- OPEN WEBUI (Interface Web type ChatGPT) ---
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - open-webui_data:/app/backend/data
+    depends_on:
+      - ollama
+
+  # --- N8N (Automatisation & Workflows) ---
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=192.x.x.x
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_SECURE_COOKIE=false
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://192.x.x.x:5678/
+      - GENERIC_TIMEZONE=Europe/Paris
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  ollama_data:
+  open-webui_data:
+  n8n_data:
