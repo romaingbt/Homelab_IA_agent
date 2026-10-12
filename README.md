@@ -106,4 +106,4 @@ Cette infrastructure est optimisée pour faire tourner des **agents intelligents
 
 ## 👤 Auteur
 
-**Romain Gambart** —
+**Romain Gambart** 
