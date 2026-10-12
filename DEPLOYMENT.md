@@ -1,24 +1,25 @@
-📋 Guide de Déploiement Pas à Pas
-Étape 1 : Création & Préparation de la VM Debian sur Proxmox VE
-Télécharger l'ISO Debian 12 Netinst sur Proxmox.
+# 📋 Guide de Déploiement Pas à Pas
 
-Créer une nouvelle VM (ex: ID 100) :
+Ce document détaille l'ensemble des étapes techniques nécessaires pour reproduire l'infrastructure de ce Home Lab, de la configuration de l'hyperviseur jusqu'au lancement des conteneurs de la stack IA.
 
-CPU : 4 Cores
+---
 
-RAM : 8 Go à 16 Go
+### Étape 1 : Création & Préparation de la VM Debian sur Proxmox VE
+1. Télécharger l'ISO **Debian 12 Netinst** sur Proxmox.
+2. Créer une nouvelle VM (ex: ID `100`) :
+   - **CPU :** 4 Cores
+   - **RAM :** 8 Go à 16 Go
+   - **Disque :** 50 Go NVMe (VirtIO SCSI)
+   - **Réseau :** Bridge `vmbr0`
+3. Installer Debian sans environnement graphique (cocher uniquement *SSH server* et *standard system utilities*).
 
-Disque : 50 Go NVMe (VirtIO SCSI)
+---
 
-Réseau : Bridge vmbr0
+### Étape 2 : Durcissement & Configuration de Debian (CLI)
 
-Installer Debian sans environnement graphique (cocher uniquement SSH server et standard system utilities).
-
-Étape 2 : Durcissement & Configuration de Debian (CLI)
-Connecte-toi en SSH à ta VM Debian :
-
-Bash
-ssh utilisateur@IP_DEBIAN
+1. Connecte-toi en SSH à ta VM Debian :
+   ```bash
+   ssh utilisateur@IP_DEBIAN
 Mets à jour le système et installe les paquets de base :
 
 Bash
@@ -35,9 +36,9 @@ sudo ufw enable
 Exécute le script d'installation officiel de Docker :
 
 Bash
-curl -fsSL [https://get.docker.com](https://get.docker.com) -o get-docker.sh
+curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
-Ajoute ton utilisateur au groupe docker (pour éviter d'utiliser sudo à chaque commande) :
+Ajoute ton utilisateur au groupe docker :
 
 Bash
 sudo usermod -aG docker $USER
@@ -124,22 +125,3 @@ Dans n8n, pour connecter ton nœud Ollama, utilise l'URL interne du conteneur :
 
 Plaintext
 http://ollama:11434
-🎯 Cas d'Usage & Workflows Réalisés
-[x] Ingestion de données : Récupération automatique et fusion de flux RSS (Offres d'emploi IT, Veille Cybersécurité).
-
-[x] Traitement intelligent par IA : Filtrage, qualification des rôles et structuration sous format JSON via Ollama (qwen2.5:3b).
-
-[x] Centralisation des données : Envoi et création automatique de pages dans Notion via l'API Notion.
-
-[ ] Monitoring & Reporting : Envoi de synthèses et d'alertes qualifiées sur Discord via Webhooks.
-
-[ ] Agents Autonomes Multi-tâches : Déploiement d'agents IA avec mémoire et capacité d'action à travers des outils (Function Calling / CrewAI).
-
-🔒 Sécurité & Bonnes Pratiques
-Principe du Moindre Privilège : Isolement des conteneurs via un réseau Docker dédié (ai_network).
-
-Souveraineté des Données : Traitement local des données sensibles grâce aux modèles auto-hébergés sans fuite vers des APIs externes.
-
-Gestion des Secrets : Ignorer les fichiers d'environnement et de clés secrets via .gitignore.
-
-👤 Auteur : Romain Gambart
